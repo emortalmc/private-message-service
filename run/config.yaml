@@ -1,0 +1,11 @@
+development: true
+
+rabbitmq:
+  host: localhost
+  username: dev
+  password: password
+
+relationshipService:
+  host: localhost:10002
+
+port: 10003

@@ -7,7 +7,7 @@ import (
 
 type Config struct {
 	RabbitMQ            RabbitMQConfig            `yaml:"rabbitmq"`
-	RelationshipService RelationshipServiceConfig `yaml:"relationship_service"`
+	RelationshipService RelationshipServiceConfig `yaml:"relationshipService"`
 	Development         bool                      `yaml:"debug"`
 
 	Port uint16 `yaml:"port"`
@@ -27,7 +27,7 @@ func LoadGlobalConfig() (cfg *Config, err error) {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 
-	viper.SetConfigName("cfg")
+	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
 
 	err = viper.ReadInConfig()

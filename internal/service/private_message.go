@@ -25,15 +25,17 @@ func NewPrivateMessageService(notif notifier.Notifier, rs relationship.Relations
 func (s *privateMessageService) SendPrivateMessage(ctx context.Context, req *pb.PrivateMessageRequest) (*pb.PrivateMessageResponse, error) {
 	// TODO: Check if the player is online.
 
-	blocked, err := s.rs.IsBlocked(ctx, &relationship.IsBlockedRequest{
+	resp, err := s.rs.IsBlocked(ctx, &relationship.IsBlockedRequest{
 		IssuerId: req.Message.SenderId,
 		TargetId: req.Message.RecipientId,
 	})
 	if err != nil {
 		return nil, err
 	}
-	if blocked.Blocked {
-		return nil, status.Error(codes.PermissionDenied, "you are blocked by this player")
+	if resp.Blocked {
+		st := status.New(codes.PermissionDenied, "you are blocked by this player")
+		st, _ = st.WithDetails(&pb.PrivateMessageErrorResponse{Reason: pb.PrivateMessageErrorResponse_PRIVACY_BLOCKED})
+		return nil, st.Err()
 	}
 
 	err = s.notif.MessageSent(ctx, req.Message)

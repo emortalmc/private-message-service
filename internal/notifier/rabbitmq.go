@@ -6,7 +6,6 @@ import (
 	pb "github.com/emortalmc/proto-specs/gen/go/model/privatemessage"
 	"github.com/golang/protobuf/proto"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"log"
 	"private-message-service/internal/config"
 )
 
@@ -42,7 +41,6 @@ func (n *rabbitMqNotifier) MessageSent(ctx context.Context, msg *pb.PrivateMessa
 	ctx, cancel := context.WithTimeout(ctx, 5)
 	defer cancel()
 
-	log.Print(msg.ProtoReflect().Descriptor().FullName())
 	return n.channel.PublishWithContext(ctx, "mc:proxy:all", "", false, false, amqp.Publishing{
 		ContentType: "application/x-protobuf",
 		Type:        string(msg.ProtoReflect().Descriptor().FullName()),

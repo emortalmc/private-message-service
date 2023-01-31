@@ -17,17 +17,17 @@ import (
 func Run(ctx context.Context, cfg *config.Config, logger *zap.SugaredLogger) {
 	notif, err := notifier.NewRabbitMqNotifier(cfg.RabbitMQ)
 	if err != nil {
-		logger.Fatalw("failed to create notifier", "error", err)
+		logger.Fatalw("failed to create notifier", err)
 	}
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))
 	if err != nil {
-		logger.Fatalw("failed to listen", "error", err)
+		logger.Fatalw("failed to listen", err)
 	}
 
 	conn, err := grpc.Dial(cfg.RelationshipService.Host, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		logger.Fatalw("failed to connect to relationship service", "error", err)
+		logger.Fatalw("failed to connect to relationship service", err)
 	}
 	rc := relationship.NewRelationshipClient(conn)
 
@@ -37,7 +37,7 @@ func Run(ctx context.Context, cfg *config.Config, logger *zap.SugaredLogger) {
 
 	err = s.Serve(lis)
 	if err != nil {
-		logger.Fatalw("failed to serve", "error", err)
+		logger.Fatalw("failed to serve", err)
 		return
 	}
 }
