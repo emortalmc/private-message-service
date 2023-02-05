@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	pb "github.com/emortalmc/proto-specs/gen/go/model/privatemessage"
-	"github.com/golang/protobuf/proto"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"google.golang.org/protobuf/proto"
 	"private-message-service/internal/config"
 )
 

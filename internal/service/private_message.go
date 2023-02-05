@@ -32,10 +32,19 @@ func (s *privateMessageService) SendPrivateMessage(ctx context.Context, req *pb.
 	if err != nil {
 		return nil, err
 	}
-	if resp.Blocked {
-		st := status.New(codes.PermissionDenied, "you are blocked by this player")
-		st, _ = st.WithDetails(&pb.PrivateMessageErrorResponse{Reason: pb.PrivateMessageErrorResponse_PRIVACY_BLOCKED})
-		return nil, st.Err()
+
+	block := resp.GetBlock()
+
+	if block != nil {
+		if block.BlockerId == req.Message.SenderId {
+			st := status.New(codes.PermissionDenied, "you have blocked this player")
+			st, _ = st.WithDetails(&pb.PrivateMessageErrorResponse{Reason: pb.PrivateMessageErrorResponse_YOU_BLOCKED})
+			return nil, st.Err()
+		} else {
+			st := status.New(codes.PermissionDenied, "you are blocked by this player")
+			st, _ = st.WithDetails(&pb.PrivateMessageErrorResponse{Reason: pb.PrivateMessageErrorResponse_PRIVACY_BLOCKED})
+			return nil, st.Err()
+		}
 	}
 
 	err = s.notif.MessageSent(ctx, req.Message)

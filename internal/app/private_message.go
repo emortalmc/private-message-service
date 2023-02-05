@@ -1,7 +1,6 @@
 package app
 
 import (
-	"context"
 	"fmt"
 	"github.com/emortalmc/proto-specs/gen/go/grpc/privatemessage"
 	"github.com/emortalmc/proto-specs/gen/go/grpc/relationship"
@@ -14,7 +13,7 @@ import (
 	"private-message-service/internal/service"
 )
 
-func Run(ctx context.Context, cfg *config.Config, logger *zap.SugaredLogger) {
+func Run(cfg *config.Config, logger *zap.SugaredLogger) {
 	notif, err := notifier.NewRabbitMqNotifier(cfg.RabbitMQ)
 	if err != nil {
 		logger.Fatalw("failed to create notifier", err)
