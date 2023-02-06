@@ -3,6 +3,7 @@ package notifier
 import (
 	"context"
 	"fmt"
+	"github.com/emortalmc/proto-specs/gen/go/message/privatemessage"
 	pb "github.com/emortalmc/proto-specs/gen/go/model/privatemessage"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"google.golang.org/protobuf/proto"
@@ -32,8 +33,10 @@ func NewRabbitMqNotifier(cfg config.RabbitMQConfig) (Notifier, error) {
 	}, nil
 }
 
-func (n *rabbitMqNotifier) MessageSent(ctx context.Context, msg *pb.PrivateMessage) error {
-	bytes, err := proto.Marshal(msg)
+func (n *rabbitMqNotifier) MessageSent(ctx context.Context, pm *pb.PrivateMessage) error {
+	message := &privatemessage.PrivateMessageReceivedMessage{PrivateMessage: pm}
+
+	bytes, err := proto.Marshal(message)
 	if err != nil {
 		return err
 	}
@@ -43,7 +46,7 @@ func (n *rabbitMqNotifier) MessageSent(ctx context.Context, msg *pb.PrivateMessa
 
 	return n.channel.PublishWithContext(ctx, "mc:proxy:all", "", false, false, amqp.Publishing{
 		ContentType: "application/x-protobuf",
-		Type:        string(msg.ProtoReflect().Descriptor().FullName()),
+		Type:        string(message.ProtoReflect().Descriptor().FullName()),
 		Body:        bytes,
 	})
 }
